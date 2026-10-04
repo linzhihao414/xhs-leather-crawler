@@ -1,138 +1,122 @@
-# 🔥 小红书关键词采集工具
+# 小红书关键词采集工具
 
-一个开箱即用的小红书笔记采集工具（基于 [MediaCrawler](https://github.com/NanmiCoder/MediaCrawler) 精简定制），**改关键词即可采集对应内容**，支持抓取**最新发布 + 最热高赞**笔记，自动导出 Excel（含笔记、评论、潜在客户线索）。
+基于 [MediaCrawler](https://github.com/NanmiCoder/MediaCrawler) 定制的小红书笔记采集工具，**改关键词即可采集对应内容**，支持抓取**最新发布 + 最热高赞**笔记，自动导出 Excel。
 
----
+## 功能特性
 
-## ✨ 功能特性
+- **关键词采集**：修改 `config/base_config.py` 中的 `KEYWORDS` 即可，中英文逗号兼容
+- **双排序**：`popularity_descending`（最热高赞）+ `time_descending`（最新发布），按笔记 ID 自动去重合并
+- **自动导出 Excel**：笔记按点赞降序、评论按时间降序
+- **评论采集**：每篇笔记自动抓取评论
+- **多平台**：除小红书外，还支持抖音、快手、B站、微博、知乎、贴吧
 
-| 功能 | 说明 |
-|---|---|
-| 🔑 关键词采集 | 改 `config\base_config.py` 里的 KEYWORDS 即可，中英文逗号都兼容（如 `皮革,人造革,PU革`） |
-| 🔥 最新 + 最热 | 双排序采集：`popularity_descending`（最热/高赞优先）+ `time_descending`（最新发布），按笔记ID自动去重合并 |
-| 📄 自动导出 Excel | 一键导出，笔记按**点赞数从高到低**排列、评论按**最新**排列，自动同步到「导出结果」文件夹 |
-| 💬 评论采集 | 每篇笔记自动抓取评论（默认30条），单独「评论明细」工作表 |
-| 📌 潜在客户线索 | 合并表按作者聚合，方便找同行/潜在客户 |
-| 🖥 便携部署 | 打好的 zip 拷到任意 Windows 电脑，运行「新电脑安装.bat」即可使用 |
+## 环境要求
 
----
+- Python 3.11+
+- Windows / macOS / Linux
+- Chrome 浏览器
 
-## 📁 目录结构
+## 快速开始
 
-```
-小红书笔记/
-├── 1_一键爬取并导出.bat   ← 主入口：扫码登录 → 爬取 → 转Excel → 打开导出结果
-├── 0_修改关键词.bat       ← 图形化修改关键词（自动保存）
-├── 2_导出Excel.bat        ← 只导出（不重新爬取）
-├── 3_打开导出结果.bat     ← 打开「导出结果」文件夹
-├── 新电脑安装.bat         ← 新电脑首次运行：自动建环境+装浏览器
-├── config\base_config.py  ← 核心配置（关键词/条数/排序）
-├── export_to_excel.py     ← 数据转Excel脚本
-└── 导出结果\              ← 所有导出的Excel都在这里
+### 1. 克隆仓库
+
+```bash
+git clone https://github.com/linzhihao414/xhs-leather-crawler.git
+cd xhs-leather-crawler
 ```
 
----
+### 2. 创建虚拟环境并安装依赖
 
-## 🚀 快速开始
+```bash
+python -m venv .venv
 
-### 1️⃣ 首次使用（新电脑）
+# Windows
+.venv\Scripts\activate
 
-1. 解压 zip 到任意目录（如 `D:\小红书采集工具`）
-2. 双击运行 **`新电脑安装.bat`**（需电脑已装 Python 3.11+）
-   - 自动创建虚拟环境、安装依赖
-   - **优先使用包内/本地浏览器**；若需联网下载 Playwright 浏览器组件，请耐心等待完成
-3. 看到「✅ 环境安装完成」即可使用
+# macOS / Linux
+source .venv/bin/activate
 
-### 2️⃣ 修改关键词
-
-双击 **`0_修改关键词.bat`**，输入你想采集的内容，例如：
-
-```
-皮革,人造革,PU革,皮革面料
+pip install -r requirements.txt
 ```
 
-> 保存后会自动写回配置。也可以直接编辑 `config\base_config.py` 的 `KEYWORDS` 行。
+### 3. 安装 Playwright 浏览器
 
-### 3️⃣ 开始采集
+```bash
+playwright install chromium
+```
 
-双击 **`1_一键爬取并导出.bat`**：
+### 4. 修改关键词
 
-1. 自动弹出浏览器 → **用手机小红书 App 扫码登录**
-2. 登录成功后自动按关键词采集（每个词、每种排序默认最多 300 条）
-3. 采集完成后自动转 Excel 并打开「导出结果」文件夹
-
-**导出结果位置：`导出结果\小红书数据_最新.xlsx`**
-
----
-
-## ⚙️ 配置详解（config\base_config.py）
+编辑 `config/base_config.py`：
 
 ```python
 # 采集关键词（中英文逗号均可）
 KEYWORDS = "皮革,人造革,PU革,皮革面料"
 
-# 每个关键词、每种排序最多采集条数（默认300，改大=更多，但更慢）
+# 每个关键词、每种排序最多采集条数
 CRAWLER_MAX_NOTES_COUNT = 300
 
-# 并发数（默认2，改大=更快，但更容易被风控）
-MAX_CONCURRENCY_NUM = 2
-
 # 搜索排序：最热=popularity_descending | 最新=time_descending | 综合=general
-# 可多选，逗号分隔，自动去重合并
 SEARCH_SORTS = "popularity_descending,time_descending"
 
-# 是否抓评论（默认开，每篇最多30条）
+# 是否抓评论
 ENABLE_GET_COMMENTS = True
 ```
 
-| 想要的效果 | 改法 |
-|---|---|
-| 只要最热高赞 | `SEARCH_SORTS = "popularity_descending"` |
-| 只要最新发布 | `SEARCH_SORTS = "time_descending"` |
-| 三种排序全要（最全） | `SEARCH_SORTS = "popularity_descending,time_descending,general"` |
-| 采集更多 | `CRAWLER_MAX_NOTES_COUNT = 500` |
+### 5. 运行采集
 
----
+```bash
+python main.py
+```
 
-## 📊 导出结果说明
+首次运行会自动弹出浏览器，**用手机小红书 App 扫码登录**即可开始采集。
 
-`导出结果\` 文件夹包含多个工作表：
+### 6. 导出 Excel
+
+采集完成后运行：
+
+```bash
+python export_to_excel.py
+```
+
+导出的 Excel 位于 `data/` 目录下。
+
+## 配置说明
+
+| 配置项 | 说明 | 默认值 |
+|---|---|---|
+| `KEYWORDS` | 采集关键词，逗号分隔 | `皮革,人造革,PU革,皮革面料` |
+| `CRAWLER_MAX_NOTES_COUNT` | 每个关键词每排序最大条数 | `300` |
+| `SEARCH_SORTS` | 排序方式，逗号分隔 | `popularity_descending,time_descending` |
+| `MAX_CONCURRENCY_NUM` | 并发数（调大易被风控） | `2` |
+| `ENABLE_GET_COMMENTS` | 是否采集评论 | `True` |
+| `ENABLE_GET_SUB_COMMENTS` | 是否采集子评论 | `False` |
+
+## 导出结果
+
+Excel 包含以下工作表：
 
 | 工作表 | 内容 |
 |---|---|
-| 笔记内容 | 所有笔记，按**点赞数从高到低**排列 |
-| 评论明细 | 每篇笔记的评论，按**时间最新在前** |
-| 评论+笔记合并 | 评论和笔记信息合并，方便筛选 |
-| 潜在客户线索 | 按作者昵称聚合，找同行/潜在客户一目了然 |
+| 笔记内容 | 所有笔记，按点赞数降序 |
+| 评论明细 | 每篇笔记的评论，按时间降序 |
+| 评论+笔记合并 | 评论和笔记信息合并 |
+| 潜在客户线索 | 按作者聚合 |
 
----
+## 常见问题
 
-## ❓ 常见问题
+**Q：为什么导出结果是旧数据？**
+> 导出 Excel 只是把已采集的 jsonl 数据转成表格，需要先运行 `python main.py` 重新采集才会更新数据。
 
-**Q1：为什么导出结果还是旧数据/很少？**
-> 确认是否真的重新跑了 `1_一键爬取并导出.bat`（而不是只点了导出）。采集数据源在 `data\xhs\jsonl\`，导出 Excel 只是把数据源转成表格；**只有重新爬取才会更新数据**。
+**Q：采集很慢？**
+> 每条笔记有防封间隔，属正常现象。词越多、条数越大越慢。
 
-**Q2：改关键词后为什么采集的还是旧内容？**
-> ① 确认关键词用的是**英文逗号**分隔（中文逗号程序也能识别，但建议英文）；② 改完必须**重新跑一键采集**，仅改配置不会自动重爬。
+**Q：扫码后登录失败？**
+> 重新运行 `python main.py` 再次扫码；若多次失败，检查网络或稍后再试。
 
-**Q3：为什么结果里老文章多？**
-> 「最热」排序本身会把历史高赞笔记排在前面，这是平台规则。要最新内容，把 `SEARCH_SORTS` 改为 `time_descending` 或两种都保留（默认已保留两种）。
+## 免责声明
 
-**Q4：采集很慢？**
-> 每条笔记有 2 秒防封间隔 + 抓评论，属正常现象。词越多、条数越大越慢，请耐心等待窗口跑完，不要中途关闭。
-
-**Q5：扫码后提示登录失败？**
-> 重新运行 `1_一键爬取并导出.bat` 再次扫码；若多次失败，检查网络或稍后再试。
-
----
-
-## ⚠️ 使用声明
-
-- 本工具仅供**学习、研究、个人用途**，请遵守小红书平台服务条款与 robots.txt 规则
-- 请合理控制采集频率（工具已内置间隔），勿对平台造成运营干扰
-- 请勿用于任何非法、商业爬取或不当用途
-- 本工具基于开源项目 [MediaCrawler](https://github.com/NanmiCoder/MediaCrawler) 定制，遵循其开源许可协议
-
----
-
-*更多使用说明见压缩包内 `0_使用说明.txt`*
+- 本项目仅供学习研究使用，请遵守小红书平台服务条款
+- 请合理控制采集频率，勿对平台造成干扰
+- 请勿用于任何非法或商业用途
+- 基于 [MediaCrawler](https://github.com/NanmiCoder/MediaCrawler) 开源项目定制，遵循其许可协议
