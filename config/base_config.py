@@ -116,7 +116,7 @@ SORT_TYPE = "popularity_descending"
 #   general               = 综合
 # 默认"最热+最新"：一次爬取同时拿到热门趋势文章和最新发布文章。
 # 只想要一种排序，就只留一个；三个都要就写全三个。
-SEARCH_SORTS = "popularity_descending,time_descending"
+SEARCH_SORTS = "time_descending"
 
 # Controlling the number of concurrent crawlers (1=慢但稳, 2-3=快一些)
 MAX_CONCURRENCY_NUM = 2
