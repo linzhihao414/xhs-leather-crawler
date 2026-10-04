@@ -16,27 +16,25 @@
 - Windows / macOS / Linux
 - Chrome 浏览器
 
-## 快速开始
+## 快速开始（Windows 一键运行）
 
-### 1. 克隆仓库
+1. 下载 zip：点页面绿色 **Code** → **Download ZIP**
+2. 解压到任意文件夹
+3. 双击 **`run.bat`** —— 首次运行会自动装环境，之后直接启动
+4. 扫码登录小红书即可开始采集
+
+> 需要电脑已安装 Python 3.10+（[下载 Python](https://www.python.org/downloads/)，安装时勾选 Add to PATH）
+
+## 手动运行（开发者）
 
 ```bash
 git clone https://github.com/linzhihao414/xhs-leather-crawler.git
 cd xhs-leather-crawler
-```
-
-### 2. 创建虚拟环境并安装依赖
-
-```bash
 python -m venv .venv
-
-# Windows
 .venv\Scripts\activate
-
-# macOS / Linux
-source .venv/bin/activate
-
 pip install -r requirements.txt
+playwright install chromium
+python main.py
 ```
 
 ### 3. 安装 Playwright 浏览器
