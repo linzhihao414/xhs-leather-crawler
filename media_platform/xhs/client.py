@@ -165,10 +165,15 @@ class XiaoHongShuClient(AbstractApiClient, ProxyRefreshMixin):
                 await self.playwright_page.goto("https://www.xiaohongshu.com/explore", wait_until="domcontentloaded")
             except Exception:
                 pass
-            # 等待用户手动完成验证，最多等180秒
+            # 等待用户手动完成验证，最多等180秒，检测页面变化提前继续
             for i in range(90):
                 await asyncio.sleep(2)
-            utils.logger.warning(">>> 等待结束，继续请求...")
+            # 过完滑块后，从浏览器同步最新cookie到httpx
+            try:
+                await self.update_cookies(self.playwright_page.context)
+                utils.logger.info(">>> Cookie已从浏览器同步，继续请求...")
+            except Exception as e:
+                utils.logger.warning(f"Cookie同步失败: {e}")
             # 重新发请求
             async with make_async_client(proxy=self.proxy) as client:
                 response = await client.request(method, url, timeout=self.timeout, **kwargs)
