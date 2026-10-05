@@ -156,12 +156,30 @@ class XiaoHongShuClient(AbstractApiClient, ProxyRefreshMixin):
             )
 
         if response.status_code == 471 or response.status_code == 461:
-            # someday someone maybe will bypass captcha
-            verify_type = response.headers["Verifytype"]
-            verify_uuid = response.headers["Verifyuuid"]
-            msg = f"CAPTCHA appeared, request failed, Verifytype: {verify_type}, Verifyuuid: {verify_uuid}, Response: {response}"
-            utils.logger.error(msg)
-            raise Exception(msg)
+            verify_type = response.headers.get("Verifytype", "")
+            verify_uuid = response.headers.get("Verifyuuid", "")
+            utils.logger.warning(f"CAPTCHA appeared! Please solve it in the browser window...")
+            # 在浏览器中打开验证页面
+            verify_url = f"https://www.xiaohongshu.com/verify?type={verify_type}&uuid={verify_uuid}"
+            try:
+                await self.playwright_page.goto(verify_url, wait_until="domcontentloaded")
+                # 等待用户手动完成验证，最多等120秒
+                for i in range(60):
+                    await asyncio.sleep(2)
+                    current_url = self.playwright_page.url
+                    if "verify" not in current_url:
+                        utils.logger.info("CAPTCHA solved! Continuing...")
+                        break
+                else:
+                    utils.logger.warning("CAPTCHA timeout after 120s, retrying anyway...")
+            except Exception as e:
+                utils.logger.warning(f"Could not open verify page: {e}")
+                await asyncio.sleep(5)
+            # 重新发请求
+            async with make_async_client(proxy=self.proxy) as client:
+                response = await client.request(method, url, timeout=self.timeout, **kwargs)
+            if response.status_code == 461:
+                raise Exception(f"Still blocked after CAPTCHA, Verifyuuid: {verify_uuid}")
 
         response_data: Optional[Dict] = None
         try:
