@@ -26,4 +26,4 @@ sqlalchemy>=2.0.0
 motor>=3.3.0
 asyncmy>=0.2.10
 openpyxl>=3.1.0
-xhshow>=0.2.0
+xhshow==0.2.0
