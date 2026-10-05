@@ -20,6 +20,11 @@ if not exist ".venv" (
 )
 
 call .venv\Scripts\activate.bat
+
+echo Loading keywords from ¹Ø¼ü´Ê.txt ...
+python sync_keywords.py
+echo.
+
 echo Starting crawler... Please scan QR code to login.
 echo.
 python main.py
