@@ -16,7 +16,8 @@ PLATFORM = "xhs"  # Platform, xhs | dy | ks | bili | wb | tieba | zhihu
 # 寮€鍚悗 API 璧?webapi.rednote.com锛宑ookie 鍩熶娇鐢?.rednote.com
 XHS_INTERNATIONAL = False
 
-# 灏忕孩涔︽悳绱㈠叧閿瘝銆傛寜闇€澧炲垹锛屼腑鑻辨枃閫楀彿鍧囧彲鍒嗛殧锛堢▼搴忎細鑷姩璇嗗埆锛夈€?KEYWORDS = (
+# 小红书搜索关键词，改 keywords.txt 文件即可
+KEYWORDS = (
     "皮女包，皮具"
 )
 LOGIN_TYPE = "qrcode"  # qrcode or phone or cookie
