@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 # Copyright (c) 2025 relakkes@gmail.com
 #
 # This file is part of MediaCrawler project.
@@ -7,26 +7,17 @@
 # Licensed under NON-COMMERCIAL LEARNING LICENSE 1.1
 #
 
-# 声明：本代码仅供学习和研究目的使用。使用者应遵守以下原则：
-# 1. 不得用于任何商业用途。
-# 2. 使用时应遵守目标平台的使用条款和robots.txt规则。
-# 3. 不得进行大规模爬取或对平台造成运营干扰。
-# 4. 应合理控制请求频率，避免给目标平台带来不必要的负担。
-# 5. 不得用于任何非法或不当的用途。
-#
-# 详细许可条款请参阅项目根目录下的LICENSE文件。
-# 使用本代码即表示您同意遵守上述原则和LICENSE中的所有条款。
-
+# 澹版槑锛氭湰浠ｇ爜浠呬緵瀛︿範鍜岀爺绌剁洰鐨勪娇鐢ㄣ€備娇鐢ㄨ€呭簲閬靛畧浠ヤ笅鍘熷垯锛?# 1. 涓嶅緱鐢ㄤ簬浠讳綍鍟嗕笟鐢ㄩ€斻€?# 2. 浣跨敤鏃跺簲閬靛畧鐩爣骞冲彴鐨勪娇鐢ㄦ潯娆惧拰robots.txt瑙勫垯銆?# 3. 涓嶅緱杩涜澶ц妯＄埇鍙栨垨瀵瑰钩鍙伴€犳垚杩愯惀骞叉壈銆?# 4. 搴斿悎鐞嗘帶鍒惰姹傞鐜囷紝閬垮厤缁欑洰鏍囧钩鍙板甫鏉ヤ笉蹇呰鐨勮礋鎷呫€?# 5. 涓嶅緱鐢ㄤ簬浠讳綍闈炴硶鎴栦笉褰撶殑鐢ㄩ€斻€?#
+# 璇︾粏璁稿彲鏉℃璇峰弬闃呴」鐩牴鐩綍涓嬬殑LICENSE鏂囦欢銆?# 浣跨敤鏈唬鐮佸嵆琛ㄧず鎮ㄥ悓鎰忛伒瀹堜笂杩板師鍒欏拰LICENSE涓殑鎵€鏈夋潯娆俱€?
 # Basic configuration
 PLATFORM = "xhs"  # Platform, xhs | dy | ks | bili | wb | tieba | zhihu
 
-# 是否使用海外版小红书 (rednote.com)
-# 开启后 API 走 webapi.rednote.com，cookie 域使用 .rednote.com
+# 鏄惁浣跨敤娴峰鐗堝皬绾功 (rednote.com)
+# 寮€鍚悗 API 璧?webapi.rednote.com锛宑ookie 鍩熶娇鐢?.rednote.com
 XHS_INTERNATIONAL = False
 
-# 小红书搜索关键词。按需增删，中英文逗号均可分隔（程序会自动识别）。
-KEYWORDS = (
-    "皮革,人造革,PU革,皮革面料"
+# 灏忕孩涔︽悳绱㈠叧閿瘝銆傛寜闇€澧炲垹锛屼腑鑻辨枃閫楀彿鍧囧彲鍒嗛殧锛堢▼搴忎細鑷姩璇嗗埆锛夈€?KEYWORDS = (
+    "皮女包，皮具"
 )
 LOGIN_TYPE = "qrcode"  # qrcode or phone or cookie
 COOKIES = ""
@@ -55,39 +46,34 @@ HEADLESS = False
 # Whether to save login status
 SAVE_LOGIN_STATE = True
 
-# ==================== CDP (Chrome DevTools Protocol) 配置 ====================
-# 是否启用 CDP 模式 - 使用用户本地的 Chrome/Edge 浏览器进行爬取，具有更好的反检测能力
-# 开启后，会自动检测并启动用户的 Chrome/Edge 浏览器，通过 CDP 协议进行控制
-# 该方式使用真实浏览器环境，包括用户的扩展、Cookie 和设置，大幅降低被风控检测的风险
-# 【注意】如果本机 Chrome 未开调试端口(9222)，请保持 False，使用内置浏览器（推荐，已装好）
+# ==================== CDP (Chrome DevTools Protocol) 閰嶇疆 ====================
+# 鏄惁鍚敤 CDP 妯″紡 - 浣跨敤鐢ㄦ埛鏈湴鐨?Chrome/Edge 娴忚鍣ㄨ繘琛岀埇鍙栵紝鍏锋湁鏇村ソ鐨勫弽妫€娴嬭兘鍔?# 寮€鍚悗锛屼細鑷姩妫€娴嬪苟鍚姩鐢ㄦ埛鐨?Chrome/Edge 娴忚鍣紝閫氳繃 CDP 鍗忚杩涜鎺у埗
+# 璇ユ柟寮忎娇鐢ㄧ湡瀹炴祻瑙堝櫒鐜锛屽寘鎷敤鎴风殑鎵╁睍銆丆ookie 鍜岃缃紝澶у箙闄嶄綆琚鎺ф娴嬬殑椋庨櫓
+# 銆愭敞鎰忋€戝鏋滄湰鏈?Chrome 鏈紑璋冭瘯绔彛(9222)锛岃淇濇寔 False锛屼娇鐢ㄥ唴缃祻瑙堝櫒锛堟帹鑽愶紝宸茶濂斤級
 ENABLE_CDP_MODE = False
 
-# CDP 调试端口，用于与浏览器通信
-# 如果端口被占用，系统会自动尝试下一个可用端口
-CDP_DEBUG_PORT = 9222
+# CDP 璋冭瘯绔彛锛岀敤浜庝笌娴忚鍣ㄩ€氫俊
+# 濡傛灉绔彛琚崰鐢紝绯荤粺浼氳嚜鍔ㄥ皾璇曚笅涓€涓彲鐢ㄧ鍙?CDP_DEBUG_PORT = 9222
 
-# 自定义浏览器路径（可选）
-# 如果为空，系统会自动检测 Chrome/Edge 的安装路径
-# Windows 示例: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
-# macOS 示例: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+# 鑷畾涔夋祻瑙堝櫒璺緞锛堝彲閫夛級
+# 濡傛灉涓虹┖锛岀郴缁熶細鑷姩妫€娴?Chrome/Edge 鐨勫畨瑁呰矾寰?# Windows 绀轰緥: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+# macOS 绀轰緥: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 CUSTOM_BROWSER_PATH = ""
 
-# 是否在 CDP 模式下启用无头模式
-# 注意：即使设置为 True，某些反检测功能在无头模式下可能无法正常工作
-CDP_HEADLESS = False
+# 鏄惁鍦?CDP 妯″紡涓嬪惎鐢ㄦ棤澶存ā寮?# 娉ㄦ剰锛氬嵆浣胯缃负 True锛屾煇浜涘弽妫€娴嬪姛鑳藉湪鏃犲ご妯″紡涓嬪彲鑳芥棤娉曟甯稿伐浣?CDP_HEADLESS = False
 
-# 浏览器启动超时时间（秒）
+# 娴忚鍣ㄥ惎鍔ㄨ秴鏃舵椂闂达紙绉掞級
 BROWSER_LAUNCH_TIMEOUT = 60
 
-# 是否连接用户已打开的浏览器，而不是启动新的浏览器
-# 开启后，程序会连接一个已经启用了远程调试的浏览器
-# 用户需要在 Chrome 中开启远程调试：chrome://inspect/#remote-debugging
-# 或者使用命令行参数启动 Chrome：--remote-debugging-port=9222
-# 这种方式反检测效果最好，因为直接使用用户真实浏览器的所有 Cookie、扩展和浏览历史
+# 鏄惁杩炴帴鐢ㄦ埛宸叉墦寮€鐨勬祻瑙堝櫒锛岃€屼笉鏄惎鍔ㄦ柊鐨勬祻瑙堝櫒
+# 寮€鍚悗锛岀▼搴忎細杩炴帴涓€涓凡缁忓惎鐢ㄤ簡杩滅▼璋冭瘯鐨勬祻瑙堝櫒
+# 鐢ㄦ埛闇€瑕佸湪 Chrome 涓紑鍚繙绋嬭皟璇曪細chrome://inspect/#remote-debugging
+# 鎴栬€呬娇鐢ㄥ懡浠よ鍙傛暟鍚姩 Chrome锛?-remote-debugging-port=9222
+# 杩欑鏂瑰紡鍙嶆娴嬫晥鏋滄渶濂斤紝鍥犱负鐩存帴浣跨敤鐢ㄦ埛鐪熷疄娴忚鍣ㄧ殑鎵€鏈?Cookie銆佹墿灞曞拰娴忚鍘嗗彶
 CDP_CONNECT_EXISTING = True
 
-# 程序结束时是否自动关闭浏览器
-# 设置为 False 可以保持浏览器运行，方便调试
+# 绋嬪簭缁撴潫鏃舵槸鍚﹁嚜鍔ㄥ叧闂祻瑙堝櫒
+# 璁剧疆涓?False 鍙互淇濇寔娴忚鍣ㄨ繍琛岋紝鏂逛究璋冭瘯
 AUTO_CLOSE_BROWSER = True
 
 # Data saving type option configuration, supports: csv, db, json, jsonl, sqlite, excel, postgres. It is best to save to DB, with deduplication function.
@@ -102,29 +88,21 @@ USER_DATA_DIR = "%s_user_data_dir"  # %s will be replaced by platform name
 # The number of pages to start crawling starts from the first page by default
 START_PAGE = 1
 
-# Control the number of crawled videos/posts (per keyword). Default 30 → 20/page*1page
-# 每个关键词最多采集的笔记数：30=约1页20条；100=约5页；300=约15页；500=约25页。按需调大。
-CRAWLER_MAX_NOTES_COUNT = 300
+# Control the number of crawled videos/posts (per keyword). Default 30 鈫?20/page*1page
+# 姣忎釜鍏抽敭璇嶆渶澶氶噰闆嗙殑绗旇鏁帮細30=绾?椤?0鏉★紱100=绾?椤碉紱300=绾?5椤碉紱500=绾?5椤点€傛寜闇€璋冨ぇ銆?CRAWLER_MAX_NOTES_COUNT = 300
 
-# 小红书搜索排序：general=综合 | popularity_descending=最热(点赞高优先) | time_descending=最新
-# 要"点赞数高的文章"请保持 popularity_descending
+# 灏忕孩涔︽悳绱㈡帓搴忥細general=缁煎悎 | popularity_descending=鏈€鐑?鐐硅禐楂樹紭鍏? | time_descending=鏈€鏂?# 瑕?鐐硅禐鏁伴珮鐨勬枃绔?璇蜂繚鎸?popularity_descending
 SORT_TYPE = "popularity_descending"
 
-# 搜索排序列表（可多选，用逗号分隔，按笔记ID自动去重合并）：
-#   popularity_descending = 最热（点赞高优先）
-#   time_descending       = 最新（刚发布的优先）
-#   general               = 综合
-# 默认"最热+最新"：一次爬取同时拿到热门趋势文章和最新发布文章。
-# 只想要一种排序，就只留一个；三个都要就写全三个。
-SEARCH_SORTS = "time_descending"
+# 鎼滅储鎺掑簭鍒楄〃锛堝彲澶氶€夛紝鐢ㄩ€楀彿鍒嗛殧锛屾寜绗旇ID鑷姩鍘婚噸鍚堝苟锛夛細
+#   popularity_descending = 鏈€鐑紙鐐硅禐楂樹紭鍏堬級
+#   time_descending       = 鏈€鏂帮紙鍒氬彂甯冪殑浼樺厛锛?#   general               = 缁煎悎
+# 榛樿"鏈€鐑?鏈€鏂?锛氫竴娆＄埇鍙栧悓鏃舵嬁鍒扮儹闂ㄨ秼鍔挎枃绔犲拰鏈€鏂板彂甯冩枃绔犮€?# 鍙兂瑕佷竴绉嶆帓搴忥紝灏卞彧鐣欎竴涓紱涓変釜閮借灏卞啓鍏ㄤ笁涓€?SEARCH_SORTS = "general"
 
-# Controlling the number of concurrent crawlers (1=慢但稳, 2-3=快一些)
+# Controlling the number of concurrent crawlers (1=鎱絾绋? 2-3=蹇竴浜?
 MAX_CONCURRENCY_NUM = 2
 
-# 是否启用媒体下载（封面、视频，以及图文帖的图片），默认关闭。
-# 开启后媒体文件按 {SAVE_DATA_PATH 或 data}/{platform}/media/{内容ID}/ 目录聚合存放。
-# 支持的平台：xhs / dy / ks / bili / wb（tieba、zhihu 的数据结构中没有媒体字段，不支持）。
-# 命令行开关：--get_media
+# 鏄惁鍚敤濯掍綋涓嬭浇锛堝皝闈€佽棰戯紝浠ュ強鍥炬枃甯栫殑鍥剧墖锛夛紝榛樿鍏抽棴銆?# 寮€鍚悗濯掍綋鏂囦欢鎸?{SAVE_DATA_PATH 鎴?data}/{platform}/media/{鍐呭ID}/ 鐩綍鑱氬悎瀛樻斁銆?# 鏀寔鐨勫钩鍙帮細xhs / dy / ks / bili / wb锛坱ieba銆亃hihu 鐨勬暟鎹粨鏋勪腑娌℃湁濯掍綋瀛楁锛屼笉鏀寔锛夈€?# 鍛戒护琛屽紑鍏筹細--get_media
 ENABLE_GET_MEDIA = False
 
 # Whether to enable comment crawling mode. Comment crawling is enabled by default.
@@ -143,8 +121,8 @@ ENABLE_GET_WORDCLOUD = False
 # Custom words and their groups
 # Add rule: xx:yy where xx is a custom-added phrase, and yy is the group name to which the phrase xx is assigned.
 CUSTOM_WORDS = {
-    "零几": "年份",  # Recognize "zero points" as a whole
-    "高频词": "专业术语",  # Example custom words
+    "闆跺嚑": "骞翠唤",  # Recognize "zero points" as a whole
+    "楂橀璇?: "涓撲笟鏈",  # Example custom words
 }
 
 # Deactivate (disabled) word file path
@@ -156,9 +134,7 @@ FONT_PATH = "./docs/STZHONGS.TTF"
 # Crawl interval
 CRAWLER_MAX_SLEEP_SEC = 2
 
-# 是否禁用 SSL 证书验证。仅在使用企业代理、Burp Suite、mitmproxy 等会注入自签名证书的中间人代理时设为 True。
-# 警告：禁用 SSL 验证将使所有流量暴露于中间人攻击风险，请勿在生产环境中开启。
-DISABLE_SSL_VERIFY = False
+# 鏄惁绂佺敤 SSL 璇佷功楠岃瘉銆備粎鍦ㄤ娇鐢ㄤ紒涓氫唬鐞嗐€丅urp Suite銆乵itmproxy 绛変細娉ㄥ叆鑷鍚嶈瘉涔︾殑涓棿浜轰唬鐞嗘椂璁句负 True銆?# 璀﹀憡锛氱鐢?SSL 楠岃瘉灏嗕娇鎵€鏈夋祦閲忔毚闇蹭簬涓棿浜烘敾鍑婚闄╋紝璇峰嬁鍦ㄧ敓浜х幆澧冧腑寮€鍚€?DISABLE_SSL_VERIFY = False
 
 from .bilibili_config import *
 from .xhs_config import *
@@ -167,3 +143,4 @@ from .ks_config import *
 from .weibo_config import *
 from .tieba_config import *
 from .zhihu_config import *
+

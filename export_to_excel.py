@@ -170,6 +170,20 @@ def sync_to_export_folder(out_path):
         print("  文件：%s" % "、".join(copied))
 
 
+def read_sort_choice():
+    """Read sort.txt: 1=likes, 2=collected, 3=comments, 4=newest"""
+    p = os.path.join(BASE_DIR, "sort.txt")
+    try:
+        with open(p, "r", encoding="utf-8") as f:
+            return int(f.read().strip() or "1")
+    except Exception:
+        return 1
+
+
+SORT_NAMES = {1: "最多点赞", 2: "最多收藏", 3: "最多评论", 4: "最新发布"}
+SORT_FIELDS = {1: "liked_count", 2: "collected_count", 3: "comment_count", 4: "time"}
+
+
 def main():
     dates = find_dates()
     if not dates:
@@ -221,18 +235,30 @@ def main():
         print("[提示] 未能读取配置关键词，导出全部数据。")
 
     if not contents:
-        print("当前关键词（%s）没有匹配到任何笔记数据。" % "、".join(config_keywords or []))
-        print("请确认已用新关键词重新运行爬虫（双击 1_一键爬取并导出.bat），再执行导出。")
-        return
+        print("[提示] 当前关键词没有匹配到数据，改为导出全部数据。")
+        # 重新读全部数据
+        contents = read_jsonl(contents_path)
+        comments = read_jsonl(comments_path)
+        if not contents:
+            print("[错误] 没有任何笔记数据，请先运行爬虫采集。")
+            return
 
-    # ---- 排序：笔记按点赞数降序（高赞在前），评论按时间最新在前 ----
+    # ---- 排序：按 sort.txt 选择 ----
+    sort_choice = read_sort_choice()
+    sort_field = SORT_FIELDS.get(sort_choice, "liked_count")
+    print("排序方式：%s" % SORT_NAMES.get(sort_choice, "最多点赞"))
+
     def _to_num(v, default=0):
         try:
             return int(str(v).replace(",", "").strip())
         except Exception:
             return default
 
-    contents.sort(key=lambda n: _to_num(n.get("liked_count")), reverse=True)
+    if sort_field == "time":
+        # 最新：按发布时间降序
+        contents.sort(key=lambda n: _to_num(n.get("time")), reverse=True)
+    else:
+        contents.sort(key=lambda n: _to_num(n.get(sort_field)), reverse=True)
     comments.sort(key=lambda c: _to_num(c.get("create_time")), reverse=True)
 
     note_index = {n["note_id"]: n for n in contents}
