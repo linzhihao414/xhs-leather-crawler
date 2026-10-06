@@ -171,11 +171,17 @@ def sync_to_export_folder(out_path):
 
 
 def read_sort_choice():
-    """Read sort.txt: 1=likes, 2=collected, 3=comments, 4=newest"""
-    p = os.path.join(BASE_DIR, "sort.txt")
+    """Read 排序选择.txt: 1=likes, 2=collected, 3=comments, 4=newest"""
+    p = os.path.join(BASE_DIR, "排序选择.txt")
+    if not os.path.exists(p):
+        p = os.path.join(BASE_DIR, "sort.txt")
     try:
         with open(p, "r", encoding="utf-8") as f:
-            return int(f.read().strip() or "1")
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#") and not line.startswith("//"):
+                    return int(line)
+        return 1
     except Exception:
         return 1
 
