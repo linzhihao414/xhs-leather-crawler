@@ -7,6 +7,9 @@ KEYWORDS = (
     "皮女包，皮具"
 )
 
+# Use international version (rednote.com)
+XHS_INTERNATIONAL = False
+
 # Login: qrcode / phone / cookie
 LOGIN_TYPE = "qrcode"
 COOKIES = ""
