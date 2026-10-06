@@ -231,12 +231,34 @@ def main():
 
         before_c = len(contents)
         contents = [n for n in contents if _kw_match(n.get("source_keyword"))]
+
+        # ---- 内容相关性过滤：标题/描述/标签里必须真的和关键词相关 ----
+        # 1) 精确包含用户关键词  2) 或包含"皮"+皮具相关字
+        leather_suffix = re.compile(r"皮[革具包料面鞋衣夹]")
+
+        def _content_relevant(note):
+            text = "%s %s %s" % (
+                note.get("title", ""), note.get("desc", ""), note.get("tag_list", "")
+            )
+            if any(kw in text for kw in config_keywords):
+                return True
+            # "皮革"搜索时，"皮具/皮包/皮料/真皮"等也视为相关
+            if leather_suffix.search(text):
+                return True
+            return False
+
+        before_filter = len(contents)
+        contents = [n for n in contents if _content_relevant(n)]
+        filtered_out = before_filter - len(contents)
+
         kept_ids = {n["note_id"] for n in contents}
         before_m = len(comments)
         comments = [c for c in comments if c.get("note_id") in kept_ids]
         if before_c != len(contents) or before_m != len(comments):
             print("已按当前配置关键词过滤（%s）：笔记 %d -> %d 条，评论 %d -> %d 条"
                   % ("、".join(config_keywords), before_c, len(contents), before_m, len(comments)))
+        if filtered_out:
+            print("已过滤不相关笔记 %d 条（标题/描述/标签不含关键词）" % filtered_out)
     else:
         print("[提示] 未能读取配置关键词，导出全部数据。")
 
