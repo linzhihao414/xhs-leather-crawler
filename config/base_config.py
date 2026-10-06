@@ -98,7 +98,8 @@ SORT_TYPE = "popularity_descending"
 # 鎼滅储鎺掑簭鍒楄〃锛堝彲澶氶€夛紝鐢ㄩ€楀彿鍒嗛殧锛屾寜绗旇ID鑷姩鍘婚噸鍚堝苟锛夛細
 #   popularity_descending = 鏈€鐑紙鐐硅禐楂樹紭鍏堬級
 #   time_descending       = 鏈€鏂帮紙鍒氬彂甯冪殑浼樺厛锛?#   general               = 缁煎悎
-# 榛樿"鏈€鐑?鏈€鏂?锛氫竴娆＄埇鍙栧悓鏃舵嬁鍒扮儹闂ㄨ秼鍔挎枃绔犲拰鏈€鏂板彂甯冩枃绔犮€?# 鍙兂瑕佷竴绉嶆帓搴忥紝灏卞彧鐣欎竴涓紱涓変釜閮借灏卞啓鍏ㄤ笁涓€?SEARCH_SORTS = "general"
+# Search sort: general=comprehensive
+SEARCH_SORTS = "general"
 
 # Controlling the number of concurrent crawlers (1=鎱絾绋? 2-3=蹇竴浜?
 MAX_CONCURRENCY_NUM = 2
@@ -143,5 +144,6 @@ from .ks_config import *
 from .weibo_config import *
 from .tieba_config import *
 from .zhihu_config import *
+
 
 
