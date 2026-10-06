@@ -165,9 +165,18 @@ class XiaoHongShuClient(AbstractApiClient, ProxyRefreshMixin):
                 await self.playwright_page.goto("https://www.xiaohongshu.com/explore", wait_until="domcontentloaded")
             except Exception:
                 pass
-            # 等待用户手动完成验证，最多等180秒，检测页面变化提前继续
-            for i in range(90):
+            # 等待用户手动完成验证，自动检测滑块是否已通过
+            for i in range(120):
                 await asyncio.sleep(2)
+                try:
+                    url_now = self.playwright_page.url
+                    # 滑块通过后页面会跳回小红书首页，检测URL变化
+                    if "verification" not in url_now and "verify" not in url_now:
+                        await asyncio.sleep(2)
+                        utils.logger.info(">>> 检测到滑块已通过，继续...")
+                        break
+                except Exception:
+                    pass
             # 过完滑块后，从浏览器同步最新cookie到httpx
             try:
                 await self.update_cookies(self.playwright_page.context)
