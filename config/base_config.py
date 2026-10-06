@@ -122,8 +122,7 @@ ENABLE_GET_WORDCLOUD = False
 # Custom words and their groups
 # Add rule: xx:yy where xx is a custom-added phrase, and yy is the group name to which the phrase xx is assigned.
 CUSTOM_WORDS = {
-    "闆跺嚑": "骞翠唤",  # Recognize "zero points" as a whole
-    "楂橀璇?: "涓撲笟鏈",  # Example custom words
+    "test": "custom",
 }
 
 # Deactivate (disabled) word file path
@@ -144,4 +143,5 @@ from .ks_config import *
 from .weibo_config import *
 from .tieba_config import *
 from .zhihu_config import *
+
 
