@@ -54,14 +54,16 @@ SAVE_LOGIN_STATE = True
 ENABLE_CDP_MODE = False
 
 # CDP 璋冭瘯绔彛锛岀敤浜庝笌娴忚鍣ㄩ€氫俊
-# 濡傛灉绔彛琚崰鐢紝绯荤粺浼氳嚜鍔ㄥ皾璇曚笅涓€涓彲鐢ㄧ鍙?CDP_DEBUG_PORT = 9222
+# CDP debug port
+CDP_DEBUG_PORT = 9222
 
 # 鑷畾涔夋祻瑙堝櫒璺緞锛堝彲閫夛級
 # 濡傛灉涓虹┖锛岀郴缁熶細鑷姩妫€娴?Chrome/Edge 鐨勫畨瑁呰矾寰?# Windows 绀轰緥: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
 # macOS 绀轰緥: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 CUSTOM_BROWSER_PATH = ""
 
-# 鏄惁鍦?CDP 妯″紡涓嬪惎鐢ㄦ棤澶存ā寮?# 娉ㄦ剰锛氬嵆浣胯缃负 True锛屾煇浜涘弽妫€娴嬪姛鑳藉湪鏃犲ご妯″紡涓嬪彲鑳芥棤娉曟甯稿伐浣?CDP_HEADLESS = False
+# Headless mode
+HEADLESS = False
 
 # 娴忚鍣ㄥ惎鍔ㄨ秴鏃舵椂闂达紙绉掞級
 BROWSER_LAUNCH_TIMEOUT = 60
@@ -90,7 +92,8 @@ USER_DATA_DIR = "%s_user_data_dir"  # %s will be replaced by platform name
 START_PAGE = 1
 
 # Control the number of crawled videos/posts (per keyword). Default 30 鈫?20/page*1page
-# 姣忎釜鍏抽敭璇嶆渶澶氶噰闆嗙殑绗旇鏁帮細30=绾?椤?0鏉★紱100=绾?椤碉紱300=绾?5椤碉紱500=绾?5椤点€傛寜闇€璋冨ぇ銆?CRAWLER_MAX_NOTES_COUNT = 300
+# Max notes per keyword
+CRAWLER_MAX_NOTES_COUNT = 300
 
 # 灏忕孩涔︽悳绱㈡帓搴忥細general=缁煎悎 | popularity_descending=鏈€鐑?鐐硅禐楂樹紭鍏? | time_descending=鏈€鏂?# 瑕?鐐硅禐鏁伴珮鐨勬枃绔?璇蜂繚鎸?popularity_descending
 SORT_TYPE = "popularity_descending"
@@ -144,6 +147,8 @@ from .ks_config import *
 from .weibo_config import *
 from .tieba_config import *
 from .zhihu_config import *
+
+
 
 
 
