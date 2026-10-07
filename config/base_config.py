@@ -1,10 +1,10 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # Basic configuration
 PLATFORM = "xhs"
 
 # Search keywords (edit keywords.txt instead)
 KEYWORDS = (
-    "皮女包，皮具"
+    "皮革,人造革,PU革,皮革面料",
 )
 
 # Use international version (rednote.com)
