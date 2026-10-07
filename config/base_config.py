@@ -4,7 +4,7 @@ PLATFORM = "xhs"
 
 # Search keywords (edit keywords.txt instead)
 KEYWORDS = (
-    "皮革,人造革,PU革,皮革面料",
+    "皮具",
 )
 
 # Use international version (rednote.com)
@@ -68,7 +68,7 @@ STOP_WORDS_FILE = "./docs/hit_stopwords.txt"
 FONT_PATH = "./docs/STZHONGS.TTF"
 
 # Timing
-CRAWLER_MAX_SLEEP_SEC = 2
+CRAWLER_MAX_SLEEP_SEC = 5
 
 # SSL
 DISABLE_SSL_VERIFY = False
