@@ -51,17 +51,33 @@ def read_config_keywords():
     except Exception:
         return []
 
-# ---------- 潜在客户识别关键词 ----------
-# 疑似商家/品牌（笔记作者侧）
-MERCHANT_WORDS = [
-    "工厂", "定制", "品牌", "工作室", "批发", "档口", "源头", "代工",
-    "OEM", "ODM", "手作", "设计", "门店", "店铺", "皮行", "皮革", "自产", "主营"
+# ---------- 女包行业客户识别（评分制） ----------
+# +50分：明确是卖包的品牌/店铺
+HIGH_VALUE_WORDS = [
+    "新品", "上新", "品牌", "店铺", "官网", "淘宝", "天猫", "独立站",
+    "招商", "包款", "包包系列", "自有品牌", "品牌发布", "collection",
+    "shop", "store", "官网", "旗舰店", "微店", "有赞",
 ]
-# 求购/合作意向（评论用户侧）
-BUY_INTENT_WORDS = [
-    "哪里买", "在哪买", "链接", "多少钱", "价格", "怎么买", "下单", "拿货",
-    "合作", "联系", "微信", "私信", "上架", "求购", "出吗", "求链接",
-    "购买", "渠道", "有货", "订购", "批发价", "能订", "想要", "蹲"
+# +30分：有设计能力/工作室
+DESIGN_WORDS = [
+    "原创设计", "设计师品牌", "工作室", "designer", "原创包",
+    "手作包", "手工包", "独立设计师",
+]
+# +20分：涉及材料/定制/工厂合作
+MATERIAL_WORDS = [
+    "材质", "皮料", "皮革", "面料", "定制", "工厂", "代工",
+    "OEM", "ODM", "来料", "材料开发", "工厂合作", "货源",
+]
+# -30分：教程/DIY/穿搭（不是客户）
+NEGATIVE_LIGHT = [
+    "教程", "DIY", "教学", "怎么", "如何", "穿搭", "搭配", "ootd",
+    "改造", "旧衣", "收纳",
+]
+# -50分：完全无关行业
+NEGATIVE_HEAVY = [
+    "美妆", "护肤", "口红", "化妆品", "减肥", "健身", "食谱", "饼干",
+    "烘焙", "蛋糕", "探店", "美食", "旅游", "酒店", "婚礼", "月子",
+    "怀孕", "备孕", "植发", "美甲", "发型", "汽车", "房产",
 ]
 
 # 只识别作者主动写在公开笔记/评论中的联系方式。
@@ -231,34 +247,12 @@ def main():
 
         before_c = len(contents)
         contents = [n for n in contents if _kw_match(n.get("source_keyword"))]
-
-        # ---- 内容相关性过滤：标题/描述/标签里必须真的和关键词相关 ----
-        # 1) 精确包含用户关键词  2) 或包含"皮"+皮具相关字
-        leather_suffix = re.compile(r"皮[革具包料面鞋衣夹]")
-
-        def _content_relevant(note):
-            text = "%s %s %s" % (
-                note.get("title", ""), note.get("desc", ""), note.get("tag_list", "")
-            )
-            if any(kw in text for kw in config_keywords):
-                return True
-            # "皮革"搜索时，"皮具/皮包/皮料/真皮"等也视为相关
-            if leather_suffix.search(text):
-                return True
-            return False
-
-        before_filter = len(contents)
-        contents = [n for n in contents if _content_relevant(n)]
-        filtered_out = before_filter - len(contents)
-
         kept_ids = {n["note_id"] for n in contents}
         before_m = len(comments)
         comments = [c for c in comments if c.get("note_id") in kept_ids]
         if before_c != len(contents) or before_m != len(comments):
             print("已按当前配置关键词过滤（%s）：笔记 %d -> %d 条，评论 %d -> %d 条"
                   % ("、".join(config_keywords), before_c, len(contents), before_m, len(comments)))
-        if filtered_out:
-            print("已过滤不相关笔记 %d 条（标题/描述/标签不含关键词）" % filtered_out)
     else:
         print("[提示] 未能读取配置关键词，导出全部数据。")
 
@@ -352,74 +346,101 @@ def main():
     write_sheet(ws3, headers3, rows3)
     style_sheet(ws3, headers3, [20, 30, 14, 40, 10, 50, 60, 14, 40, 10, 10, 16])
 
-    # ---- Sheet4 潜在客户线索（去重合并同账号） ----
-    ws4 = wb.create_sheet("潜在客户线索")
-    headers4 = ["线索类型", "账号昵称", "用户ID", "用户主页链接", "线索评分",
-                "判断依据", "公开联系方式(原文)", "对应笔记标题", "笔记链接",
-                "笔记点赞数", "来源关键词", "线索原文示例"]
-    leads = {}  # key=(type, uid或昵称)
+    # ---- Sheet4 女包行业客户识别（只看笔记作者，评论用户不算客户） ----
+    ws4 = wb.create_sheet("女包客户识别")
+    headers4 = ["客户评分", "客户等级", "账号昵称", "用户ID", "用户主页链接",
+                "符合特征", "扣分特征", "公开联系方式",
+                "对应笔记标题", "笔记链接", "笔记点赞数", "来源关键词", "笔记内容摘要"]
+    leads = {}  # key=(uid或昵称)
 
-    def add_lead(kind, nickname, uid, user_url, words, note_title, note_url, liked, keyword, sample):
-        key = (kind, uid if uid else (nickname or "unknown"))
+    def score_author(note):
+        """Score a note author as potential customer. Returns (score, hits_pos, hits_neg)."""
+        text = "%s %s %s %s" % (
+            note.get("title", ""), note.get("desc", ""),
+            note.get("tag_list", ""), note.get("nickname", "")
+        )
+        pos = []
+        neg = []
+        score = 0
+
+        for w in HIGH_VALUE_WORDS:
+            if w in text:
+                score += 50
+                pos.append(w)
+        for w in DESIGN_WORDS:
+            if w in text:
+                score += 30
+                pos.append(w)
+        for w in MATERIAL_WORDS:
+            if w in text:
+                score += 20
+                pos.append(w)
+        for w in NEGATIVE_LIGHT:
+            if w in text:
+                score -= 30
+                neg.append(w)
+        for w in NEGATIVE_HEAVY:
+            if w in text:
+                score -= 50
+                neg.append(w)
+
+        return score, pos, neg
+
+    def add_lead(note):
+        key = note.get("user_id") or note.get("nickname") or "unknown"
+        score, pos, neg = score_author(note)
+        text = "%s %s %s" % (note.get("title", ""), note.get("desc", ""), note.get("tag_list", ""))
+        contacts = public_contacts(text)
+
         if key not in leads:
             leads[key] = {
-                "kind": kind, "nickname": nickname or "", "uid": uid or "",
-                "url": user_url or "", "words": set(words),
-                "contacts": set(public_contacts(sample)), "urls": [],
-                "titles": [], "sample": sample or "", "liked": liked or "",
-                "keyword": keyword or "",
+                "nickname": note.get("nickname", ""), "uid": note.get("user_id", ""),
+                "url": note.get("user_url", ""),
+                "score": score, "pos": set(pos), "neg": set(neg),
+                "contacts": set(contacts), "titles": [], "urls": [],
+                "liked": note.get("liked_count", ""), "keyword": note.get("source_keyword", ""),
+                "summary": text[:200],
             }
         else:
-            leads[key]["words"].update(words)
-            leads[key]["contacts"].update(public_contacts(sample))
-        if note_title and note_title not in leads[key]["titles"]:
-            leads[key]["titles"].append(note_title)
-        if not leads[key]["sample"]:
-            leads[key]["sample"] = sample or ""
-        if not leads[key]["liked"]:
-            leads[key]["liked"] = liked or ""
-        if not leads[key]["keyword"]:
-            leads[key]["keyword"] = keyword or ""
-        if note_url and note_url not in leads[key]["urls"]:
-            leads[key]["urls"].append(note_url)
+            leads[key]["score"] = max(leads[key]["score"], score)
+            leads[key]["pos"].update(pos)
+            leads[key]["neg"].update(neg)
+            leads[key]["contacts"].update(contacts)
+        if note.get("title") and note["title"] not in leads[key]["titles"]:
+            leads[key]["titles"].append(note["title"])
+        if note.get("note_url") and note["note_url"] not in leads[key]["urls"]:
+            leads[key]["urls"].append(note["note_url"])
 
-    # 笔记作者侧：疑似商家/品牌
+    # 只从笔记作者中筛选，评论用户不再算客户
     for n in contents:
-        text = "%s %s %s" % (n.get("title", ""), n.get("desc", ""), n.get("tag_list", ""))
-        words = match_words(text, MERCHANT_WORDS)
-        if words:
-            add_lead("笔记作者(疑似商家/品牌)", n.get("nickname", ""), n.get("user_id", ""),
-                     n.get("user_url", ""), words, n.get("title", ""), n.get("note_url", ""),
-                     n.get("liked_count", ""), n.get("source_keyword", ""),
-                     text)
-    # 评论用户侧：求购/合作意向
-    for c in comments:
-        text = c.get("content", "")
-        words = match_words(text, BUY_INTENT_WORDS)
-        if words:
-            n = note_index.get(c.get("note_id"))
-            add_lead("评论用户(求购/合作意向)", c.get("nickname", ""), c.get("user_id", ""),
-                     c.get("user_url", ""), words,
-                     n.get("title", "") if n else "",
-                     n.get("note_url", "") if n else "",
-                     n.get("liked_count", "") if n else "",
-                     n.get("source_keyword", "") if n else "",
-                     text)
+        add_lead(n)
+
+    # 按评分排序，只保留有意义的（>=0分）
+    def grade(score):
+        if score >= 80:
+            return "A-核心客户"
+        elif score >= 40:
+            return "B-潜在客户"
+        elif score >= 10:
+            return "C-观察"
+        else:
+            return "D-排除"
 
     rows4 = []
-    for key in sorted(leads.keys(), key=lambda k: (leads[k]["kind"], leads[k]["nickname"])):
+    for key in sorted(leads.keys(), key=lambda k: leads[k]["score"], reverse=True):
         d = leads[key]
+        if d["score"] < 0:
+            continue
         rows4.append([
-            d["kind"], d["nickname"], d["uid"], d["url"],
-            min(100, (55 if d["kind"].startswith("笔记作者") else 45)
-                + min(25, len(d["words"]) * 5) + (20 if d["contacts"] else 0)),
-            "、".join(sorted(d["words"])),
+            d["score"], grade(d["score"]), d["nickname"], d["uid"], d["url"],
+            "、".join(sorted(d["pos"])), "、".join(sorted(d["neg"])),
             "、".join(sorted(d["contacts"])),
             " | ".join(d["titles"][:2]),
-            " | ".join(d["urls"][:2]), d["liked"], d["keyword"], d["sample"]
+            " | ".join(d["urls"][:2]),
+            d["liked"], d["keyword"], d["summary"]
         ])
     write_sheet(ws4, headers4, rows4)
-    style_sheet(ws4, headers4, [22, 14, 18, 40, 10, 26, 32, 40, 50, 10, 25, 60])
+    style_sheet(ws4, headers4, [10, 12, 14, 18, 40, 30, 20, 30, 40, 50, 10, 20, 50])
 
     out_path = os.path.join(OUT_DIR, "小红书数据_%s.xlsx" % target)
     try:
@@ -433,14 +454,15 @@ def main():
     # 自动同步到根目录"导出结果"文件夹
     sync_to_export_folder(out_path)
 
-    merchant_count = len([k for k in leads if k[0].startswith("笔记作者")])
-    intent_count = len([k for k in leads if k[0].startswith("评论用户")])
+    a_count = len([r for r in rows4 if r[1].startswith("A")])
+    b_count = len([r for r in rows4 if r[1].startswith("B")])
+    c_count = len([r for r in rows4 if r[1].startswith("C")])
     print("完成！已生成: %s" % out_path)
     print("  笔记 %d 条 | 评论 %d 条 | 评论匹配到笔记 %d 条（匹配率 %d%%）"
           % (len(contents), len(comments), matched, matched * 100 // max(len(comments), 1)))
-    print("  潜在客户线索：疑似商家/品牌账号 %d 个 | 求购/合作意向用户 %d 个"
-          % (merchant_count, intent_count))
-    print("提示：本次数据若缺少'用户ID/主页链接'列内容，说明是用旧版爬虫抓的，需重新运行爬虫后转表。")
+    print("  女包客户识别（仅笔记作者）：A类核心客户 %d 个 | B类潜在客户 %d 个 | C类观察 %d 个"
+          % (a_count, b_count, c_count))
+    print("  重点看A类，直接联系；B类可关注；C类先观察。")
 
 
 if __name__ == "__main__":
