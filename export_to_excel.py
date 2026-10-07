@@ -223,12 +223,12 @@ def main():
     if not os.path.exists(contents_path):
         print("缺少文件: %s" % contents_path)
         return
-    if not os.path.exists(comments_path):
-        print("缺少文件: %s" % comments_path)
-        return
-
     contents = read_jsonl(contents_path)
-    comments = read_jsonl(comments_path)
+    if os.path.exists(comments_path):
+        comments = read_jsonl(comments_path)
+    else:
+        print("[提示] 评论文件不存在，只导出笔记数据。")
+        comments = []
 
     # ---- 只保留当前配置关键词对应的数据（避免同一天累积的旧词数据混入）----
     config_keywords = read_config_keywords()
@@ -260,7 +260,10 @@ def main():
         print("[提示] 当前关键词没有匹配到数据，改为导出全部数据。")
         # 重新读全部数据
         contents = read_jsonl(contents_path)
-        comments = read_jsonl(comments_path)
+        if os.path.exists(comments_path):
+            comments = read_jsonl(comments_path)
+        else:
+            comments = []
         if not contents:
             print("[错误] 没有任何笔记数据，请先运行爬虫采集。")
             return
